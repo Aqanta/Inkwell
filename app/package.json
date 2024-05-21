@@ -1,0 +1,15 @@
+{
+  "name": "inkwell",
+  "version": "0.1.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "cd vue && npm run build && cd .. && electron ."
+  },
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^30.0.6"
+  }
+}
