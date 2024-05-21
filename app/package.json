@@ -11,5 +11,6 @@
   "license": "MIT",
   "devDependencies": {
     "electron": "^30.0.6"
-  }
+  },
+  "icon": "inkwell.ico"
 }

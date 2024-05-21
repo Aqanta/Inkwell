@@ -1,8 +1,8 @@
 <template>
   <div>
-    <div class="is-flex is-flex-direction-row">
+    <div class="is-flex is-flex-direction-row mb-1">
       <div class="is-flex-grow-1"></div>
-      <img src="../assets/inkwell.png" style="width: 55%">
+      <img src="../assets/Inkwell.svg" style="width: 40%">
       <div class="is-flex-grow-1"></div>
     </div>
     <aside class="menu">

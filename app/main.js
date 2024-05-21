@@ -13,6 +13,7 @@ function createWindow() {
             preload: path.join( __dirname, "preload.js" )
         },
         autoHideMenuBar: true,
+        icon: path.join( __dirname, 'inkwell.ico' )
     } );
 
     win.loadFile( path.join( __dirname, "vue", "dist", "index.html" ) );
