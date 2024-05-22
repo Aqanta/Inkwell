@@ -1,40 +1,48 @@
 <template>
-  <div id="editor" style="min-height: 15rem">
+  <!-- Create toolbar container -->
+  <div class="is-flex is-flex-direction-row is-size-3">
+    <div class="is-flex-grow-1"></div>
+    <div id="toolbar" class="box is-position-sticky" style="border: none; z-index: 30;">
+      <select class="ql-size mx-2">
+      </select>
+      <select class="ql-font mx-2">
+      </select>
+
+      <button class="ql-indent ml-2" value="-1"></button>
+      <button class="ql-indent mr-2" value="+1"></button>
+
+      <button class="ql-bold"></button>
+      <button class="ql-italic"></button>
+      <button class="ql-underline"></button>
+      <button class="ql-strike"></button>
+
+      <button class="ql-clean ml-2"></button>
+    </div>
+    <div class="is-flex-grow-1"></div>
+  </div>
+  <div id="editor" style="min-height: 15rem; border: none;">
   </div>
 </template>
 
 <script>
 import Quill from 'quill';
 import QuillMarkdown from 'quilljs-markdown';
+import helperFunctions from "../helperFunctions.vue";
 
 export default {
   name: "Editor",
+  mixins: [helperFunctions],
   data() {
   },
   methods: {},
   mounted() {
-    Quill.register('modules/QuillMarkdown', QuillMarkdown, true);
+    Quill.register( 'modules/QuillMarkdown', QuillMarkdown, true );
     const quill = new Quill( '#editor', {
       modules: {
-        toolbar: [
-          ['bold', 'italic', 'underline', 'strike'],        // toggled buttons
-          ['blockquote', 'code-block'],
-          [{ 'header': 1 }, { 'header': 2 }, { 'header': 3 }],               // custom button values
-          [{ 'list': 'ordered' }, { 'list': 'bullet' }, { 'list': 'check' }],
-          [{ 'script': 'sub' }, { 'script': 'super' }],      // superscript/subscript
-          [{ 'indent': '-1' }, { 'indent': '+1' }],          // outdent/indent
-          [{ 'size': ['small', false, 'large', 'huge'] }],  // custom dropdown
-
-          [{ 'color': [] }, { 'background': [] }],          // dropdown with defaults from theme
-          [{ 'font': [] }],
-          [{ 'align': [] }],
-
-          ['clean']                                         // remove formatting button
-        ],
-        QuillMarkdown: {
-        }
+        toolbar: '#toolbar',
+        QuillMarkdown: {}
       },
-      placeholder: 'Compose an epic...',
+      placeholder: this.randomItem(['Compose an epic...', 'Pick up a pen and start writing...', 'Unleash your imagination...', 'Once upon a time...', 'It was a dark and stormy night...']),
       theme: 'snow'
     } );
   }

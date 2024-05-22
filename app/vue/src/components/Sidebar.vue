@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="box">
     <div class="is-flex is-flex-direction-row mb-1">
       <div class="is-flex-grow-1"></div>
       <img src="../assets/Inkwell.svg" style="width: 40%">
@@ -35,6 +35,8 @@ export default {
 }
 </script>
 
-<style scoped>
-
+<style >
+.ql-editor {
+  font-size: 20px !important;
+}
 </style>
