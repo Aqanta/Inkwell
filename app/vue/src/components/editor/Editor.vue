@@ -5,6 +5,7 @@
 
 <script>
 import Quill from 'quill';
+import QuillMarkdown from 'quilljs-markdown';
 
 export default {
   name: "Editor",
@@ -12,6 +13,7 @@ export default {
   },
   methods: {},
   mounted() {
+    Quill.register('modules/QuillMarkdown', QuillMarkdown, true);
     const quill = new Quill( '#editor', {
       modules: {
         toolbar: [
@@ -29,6 +31,8 @@ export default {
 
           ['clean']                                         // remove formatting button
         ],
+        QuillMarkdown: {
+        }
       },
       placeholder: 'Compose an epic...',
       theme: 'snow'
