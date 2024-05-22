@@ -1,13 +1,10 @@
 <template>
-  <div class="is-flex is-flex-direction-row">
-    <div class="p-2" style="width: 20%">
+  <div class="is-flex is-flex-direction-row" style="height: 100%">
+    <div class="pt-2 pl-2" style="width: 17.5%">
       <Sidebar/>
     </div>
-    <div class="is-flex-grow-1">
-      <Editor/>
-    </div>
-    <div class="p-2" style="width: 30%">
-      <h4 class="is-size-4">Comments</h4>
+    <div style="width:82.5%">
+      <Snip/>
     </div>
   </div>
 </template>
@@ -18,6 +15,7 @@
 <script setup>
 import Sidebar from "./components/Sidebar.vue";
 import Editor from "./components/editor/Editor.vue";
+import Snip from "./components/editor/Snip.vue";
 </script>
 
 <script>

@@ -1,11 +1,11 @@
 <template>
-  <div class="box">
+  <div style="height: 100%">
     <div class="is-flex is-flex-direction-row mb-1">
       <div class="is-flex-grow-1"></div>
-      <img src="../assets/Inkwell.svg" style="width: 40%">
+      <img src="../assets/Inkwell.svg" style="width: 34%">
       <div class="is-flex-grow-1"></div>
     </div>
-    <aside class="menu">
+    <aside class="menu mt-1" style="box-shadow: 5px 0 2px -3px #ddd; height: 100%">
       <ul class="menu-list">
         <li><a>New Snip</a></li>
         <li><a>Collections</a>
