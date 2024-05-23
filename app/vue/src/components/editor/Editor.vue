@@ -1,5 +1,5 @@
 <template>
-  <div class="pt-5 mr-4">
+  <div :class="['pt-3 mr-4', theme === 'dark' ? 'has-text-light' : 'has-text-dark']" style="height: 100%;">
     <div class="is-flex is-flex-direction-row is-size-3">
       <div class="is-flex-grow-1"></div>
       <div id="toolbar" class="box is-position-sticky" style="border: none; z-index: 30;">
@@ -20,40 +20,99 @@
       </div>
       <div class="is-flex-grow-1"></div>
     </div>
-    <div id="editor" ref="editor" style="border: none; max-width: 100%">
+    <div id="editor" style="border: none; max-width: 100%; height: 100%">
     </div>
   </div>
 </template>
 
 <script>
-import { ref } from 'vue';
-
 import Quill from 'quill';
 import QuillMarkdown from 'quilljs-markdown';
 import helperFunctions from "../helperFunctions.vue";
+import { shallowRef } from "vue";
+
 
 
 export default {
   name: "Editor",
   mixins: [helperFunctions],
+  props: {
+    theme: {
+      type: String,
+      required: true
+    },
+    initialContent: {
+      type: Object,
+      default: undefined
+    }
+  },
   data() {
+    return {
+      newText: false,
+      textTimeout: null,
+      quill: undefined
+    }
   },
-  computed: {
+  computed: {},
+  methods: {
+    sendText: function () {
+      let contents = this.quill.getContents();
+      this.$emit( 'text', contents );
+      this.newText = false;
+      this.textTimeout = setTimeout( () => {
+        if ( this.newText ) {
+          this.textTimeout = null;
+          this.sendText();
+        }
+      }, 5000 ); //TODO make this an option
+    }
   },
-  methods: {},
   mounted() {
     Quill.register( 'modules/QuillMarkdown', QuillMarkdown, true );
-    const quill = new Quill( '#editor', {
+    this.quill = shallowRef( new Quill( '#editor', {
       modules: {
         toolbar: '#toolbar',
         QuillMarkdown: {}
       },
       placeholder: this.randomItem( ['Compose an epic...', 'Pick up a pen, start writing...', 'Unleash your imagination...', 'Once upon a time...', 'It was a dark and stormy night...'] ),
       theme: 'snow'
+    } ) );
+    if ( this.initialContent ) {
+      this.quill.setContents( this.initialContent , 'silent' );
+    }
+    this.quill.on( 'text-change', ( delta, oldDelta, source ) => {
+      if ( !this.textTimeout ) {
+        this.sendText();
+      } else {
+        this.newText = true;
+      }
     } );
   }
 }
 </script>
 
-<style scoped>
+<style>
+.ql-editor {
+  font-size: 20px !important;
+}
+
+.theme-dark .ql-snow .ql-stroke {
+  stroke: hsl(0, 0%, 96%) !important;
+}
+
+.theme-dark .ql-snow .ql-fill {
+  fill: hsl(0, 0%, 96%) !important;
+}
+
+.theme-dark .ql-snow .ql-picker {
+  color: hsl(0, 0%, 96%) !important;
+}
+
+.theme-dark .ql-snow strong {
+  color: hsl(0, 0%, 96%) !important;
+}
+
+.ql-editor.ql-blank::before {
+  color: v-bind("theme === 'dark' ? 'hsl(0, 0%, 71%)' : 'hsl(0, 0%, 29%)'") !important;
+}
 </style>

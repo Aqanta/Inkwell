@@ -1,39 +1,45 @@
 <template>
-  <div class="is-flex is-flex-direction-row p-4 pl-0 mt-1" style="box-shadow: 0 5px 2px -3px #ddd">
-    <div class="is-flex-grow-1">
-      <input class="input is-size-3 titleInput" type="text" placeholder="Snip"/>
-    </div>
-    <div class="buttons has-addons mb-0 mx-4">
-      <button class="button is-large" title="Add Tag">
-        <span class="icon is-large">
-          <FontAwesomeIcon :icon="fas.faCirclePlus"/>
-        </span>
-      </button>
-    </div>
-    <div class="buttons has-addons">
-      <button class="button is-large" title="Find">
+  <div class="is-flex is-flex-direction-row" style="height: 100%;">
+    <div style="width: 80%; height: 100%">
+      <div class="is-flex is-flex-direction-row px-4 py-0 m-2 box">
+        <div class="is-flex is-flex-direction-column is-flex-grow-1">
+          <div class="pl-2 my-3">
+            <input class="input is-size-3 titleInput" type="text" placeholder="Snip"/>
+          </div>
+          <div class="pb-2">
+              <span class="icon">
+                  <FontAwesomeIcon :icon="fas.faCirclePlus"/>
+              </span>
+          </div>
+        </div>
+        <div class="buttons has-addons">
+          <button class="button is-large" title="Find">
         <span class="icon is-large">
           <FontAwesomeIcon :icon="fas.faMagnifyingGlass"/>
         </span>
-      </button>
-      <button class="button is-large" title="Organize">
+          </button>
+          <button class="button is-large" title="Organize">
         <span class="icon is-large">
           <FontAwesomeIcon :icon="fas.faFolderPlus"/>
         </span>
-      </button>
-      <button class="button is-large" title="Export">
+          </button>
+          <button class="button is-large" title="Export">
         <span class="icon is-large">
           <FontAwesomeIcon :icon="fas.faFileExport"/>
         </span>
-      </button>
+          </button>
+        </div>
+      </div>
+      <div style="height: 100%;">
+        <Editor
+            :theme="theme"
+            @text="contents => $store.updateSnip(id, contents)"
+            :initialContent="delta"
+        />
+      </div>
     </div>
-  </div>
-  <div class="is-flex is-flex-direction-row">
-    <div style="width: 80%">
-      <Editor/>
-    </div>
-    <div style="width: 20%" >
-
+    <div style="width: 20%" class="box m-2">
+      <h3 class="is-size-3">Notes</h3>
     </div>
   </div>
 </template>
@@ -48,7 +54,25 @@ import Editor from "./Editor.vue";
 
 
 export default {
-  name: "Snip"
+  name: "Snip",
+  props: {
+    theme: {
+      type: String,
+      required: true
+    },
+    id: {
+      type: Object,
+      required: true
+    }
+  },
+  computed: {
+    snip: function () {
+      return this.$store.getSnip( this.id );
+    },
+    delta: function () {
+      return this.snip.delta ?? undefined;
+    }
+  }
 }
 </script>
 
@@ -58,7 +82,12 @@ export default {
   text-overflow: ellipsis;
   box-shadow: none;
   line-height: 3rem;
+  height: 2.75rem;
   padding: 0;
+}
+
+.titleInput:focus {
+  box-shadow: none;
 }
 
 .square {

@@ -16,6 +16,7 @@
     "bulma": "^1.0.1",
     "quill": "^2.0.2",
     "quilljs-markdown": "^1.2.0",
+    "uuid": "^9.0.1",
     "vue": "^3.4.21"
   },
   "devDependencies": {

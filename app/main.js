@@ -1,5 +1,6 @@
-const { app, BrowserWindow, Menu, MenuItem } = require( "electron" );
+const { app, BrowserWindow, Menu, MenuItem, ipcMain } = require( "electron" );
 const path = require( "path" );
+const fs = require( "fs" );
 
 function createWindow() {
     const win = new BrowserWindow( {
@@ -18,29 +19,29 @@ function createWindow() {
 
     win.loadFile( path.join( __dirname, "vue", "dist", "index.html" ) );
 
-    win.webContents.on('context-menu', (event, params) => {
+    win.webContents.on( 'context-menu', ( event, params ) => {
         const menu = new Menu()
 
         // Add each spelling suggestion
-        for (const suggestion of params.dictionarySuggestions) {
-            menu.append(new MenuItem({
+        for ( const suggestion of params.dictionarySuggestions ) {
+            menu.append( new MenuItem( {
                 label: suggestion,
-                click: () => win.webContents.replaceMisspelling(suggestion)
-            }))
+                click: () => win.webContents.replaceMisspelling( suggestion )
+            } ) )
         }
 
         // Allow users to add the misspelled word to the dictionary
-        if (params.misspelledWord) {
+        if ( params.misspelledWord ) {
             menu.append(
-                new MenuItem({
+                new MenuItem( {
                     label: 'Add to dictionary',
-                    click: () => win.webContents.session.addWordToSpellCheckerDictionary(params.misspelledWord)
-                })
+                    click: () => win.webContents.session.addWordToSpellCheckerDictionary( params.misspelledWord )
+                } )
             )
         }
 
-        menu.popup()
-    })
+        menu.popup();
+    } );
 }
 
 app.whenReady().then( () => {
@@ -56,5 +57,26 @@ app.whenReady().then( () => {
 app.on( "window-all-closed", () => {
     if ( process.platform !== "darwin" ) {
         app.quit();
+    }
+} );
+
+fs.mkdir( path.join( app.getPath( 'home' ), 'Documents', 'Inkwell' ), () => {
+} );
+
+ipcMain.on( 'save', ( event, data ) => {
+    //console.log( 'saving', data );
+    fs.writeFile(
+        path.join( app.getPath( 'home' ), 'Documents', 'Inkwell', "data.json" ),
+        JSON.stringify( data, null, 2 ),
+        ( err ) => {
+            if ( err ) {
+                console.error( err );
+            }
+        } );
+} );
+
+ipcMain.handle( 'getData', ( event ) => {
+    if ( fs.existsSync( path.join( app.getPath( 'home' ), 'Documents', 'Inkwell', "data.json" ) ) ) {
+        return JSON.parse( fs.readFileSync( path.join( app.getPath( 'home' ), 'Documents', 'Inkwell', "data.json" ) ) );
     }
 } );

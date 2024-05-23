@@ -1,11 +1,25 @@
 <template>
-  <div style="height: 100%">
-    <div class="is-flex is-flex-direction-row mb-1">
-      <div class="is-flex-grow-1"></div>
-      <img src="../assets/Inkwell.svg" style="width: 34%">
-      <div class="is-flex-grow-1"></div>
+  <div style="max-height: 97%" class="box">
+    <div class="is-flex is-flex-direction-row is-justify-content-space-between p-1 pb-2 mb-1">
+      <div class="mt-2" @click="menuOpen = !menuOpen">
+        <span class="icon is-medium">
+          <img src="../assets/Inkwell.svg">
+        </span>
+      </div>
+      <div class="buttons has-addons">
+        <button class="button is-light" @click="$emit('themeChange','light')">
+          <span class="icon">
+            <FontAwesomeIcon :icon="fas.faSun"/>
+          </span>
+        </button>
+        <button class="button is-dark" @click="$emit('themeChange','dark')">
+          <span class="icon">
+            <FontAwesomeIcon :icon="fas.faMoon"/>
+          </span>
+        </button>
+      </div>
     </div>
-    <aside class="menu mt-1" style="box-shadow: 5px 0 2px -3px #ddd; height: 100%">
+    <aside class="menu mt-1" v-if="menuOpen">
       <ul class="menu-list">
         <li><a>New Snip</a></li>
         <li><a>Collections</a>
@@ -29,14 +43,22 @@
   </div>
 </template>
 
+<script setup>
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { fas } from '@fortawesome/free-solid-svg-icons'
+</script>
+
 <script>
 export default {
-  name: "SideBar.vue"
+  name: "SideBar.vue",
+  data() {
+    return {
+      menuOpen: true
+    }
+  },
 }
 </script>
 
-<style >
-.ql-editor {
-  font-size: 20px !important;
-}
+<style>
+
 </style>
