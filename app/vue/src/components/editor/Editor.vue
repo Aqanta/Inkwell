@@ -55,7 +55,7 @@ export default {
   },
   computed: {},
   methods: {
-    sendText: function () {
+    sendText() {
       let contents = this.quill.getContents();
       this.$emit( 'text', contents );
       this.newText = false;
@@ -65,6 +65,9 @@ export default {
           this.sendText();
         }
       }, 5000 ); //TODO make this an option
+    },
+    getContents(){
+      return this.quill.getContents();
     }
   },
   mounted() {
@@ -79,6 +82,8 @@ export default {
     } ) );
     if ( this.initialContent ) {
       this.quill.setContents( this.initialContent , 'silent' );
+    } else{
+      this.quill.setContents( [] , 'silent' );
     }
     this.quill.on( 'text-change', ( delta, oldDelta, source ) => {
       if ( !this.textTimeout ) {

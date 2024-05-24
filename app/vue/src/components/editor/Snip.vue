@@ -1,10 +1,10 @@
 <template>
   <div class="is-flex is-flex-direction-row" style="height: 100%;">
-    <div style="width: 80%; height: 100%">
+    <div style="width: 100%; height: 100%">
       <div class="is-flex is-flex-direction-row px-4 py-0 m-2 box">
         <div class="is-flex is-flex-direction-column is-flex-grow-1">
           <div class="pl-2 my-3">
-            <input class="input is-size-3 titleInput" type="text" placeholder="Snip"/>
+            <input class="input is-size-3 titleInput" type="text" :placeholder="snip.placeholderName" v-model="snip.name"/>
           </div>
           <div class="pb-2">
               <span class="icon">
@@ -32,15 +32,17 @@
       </div>
       <div style="height: 100%;">
         <Editor
+            ref="editor"
+            v-if="editorVisible"
             :theme="theme"
-            @text="contents => $store.updateSnip(id, contents)"
+            @text="contents => $emit('updateSnip', openContents, contents)"
             :initialContent="delta"
         />
       </div>
     </div>
-    <div style="width: 20%" class="box m-2">
+    <!--<div style="width: 20%" class="box m-2">
       <h3 class="is-size-3">Notes</h3>
-    </div>
+    </div>-->
   </div>
 </template>
 
@@ -51,7 +53,7 @@ import Editor from "./Editor.vue";
 </script>
 
 <script>
-
+import { nextTick } from 'vue'
 
 export default {
   name: "Snip",
@@ -60,17 +62,41 @@ export default {
       type: String,
       required: true
     },
-    id: {
+    bookshelf: {
+      type: Object,
+      required: true
+    },
+    openContents: {
       type: Object,
       required: true
     }
   },
+  data() {
+    return {
+      editorVisible: true
+    }
+  },
   computed: {
-    snip: function () {
-      return this.$store.getSnip( this.id );
+    snip() {
+      return this.bookshelf.collections[this.openContents.collectionID].snips[this.openContents.snipID];
     },
     delta: function () {
       return this.snip.delta ?? undefined;
+    }
+  },
+  methods: {
+    getContents(){
+      return this.$refs['editor'].getContents();
+    }
+  },
+  watch: {
+    openContents: {
+      async handler( ) {
+        this.editorVisible = false;
+        await nextTick();
+        this.editorVisible = true;
+      },
+      deep: true
     }
   }
 }
