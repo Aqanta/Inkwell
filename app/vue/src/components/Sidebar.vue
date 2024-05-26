@@ -1,31 +1,12 @@
 <template>
   <div style="max-height: 97%" class="box">
-    <div class="is-flex is-flex-direction-row is-justify-content-space-between p-1 pb-2 mb-1">
-      <div class="mt-2" @click="menuOpen = !menuOpen">
-        <span class="icon is-medium">
-          <img src="../assets/Inkwell.svg">
-        </span>
-      </div>
-      <div class="buttons has-addons">
-        <button class="button is-light" @click="$emit('themeChange','light')">
-          <span class="icon">
-            <FontAwesomeIcon :icon="fas.faSun"/>
-          </span>
-        </button>
-        <button class="button is-dark" @click="$emit('themeChange','dark')">
-          <span class="icon">
-            <FontAwesomeIcon :icon="fas.faMoon"/>
-          </span>
-        </button>
-      </div>
-    </div>
     <div v-if="menuOpen">
       <aside class="menu mt-1" v-if="openContents.collectionID">
         <ul class="menu-list">
           <li><a @click="$emit('addSnip', openContents.collectionID)" class="p-0" style="margin-left: -.5rem;">
-            <div class="is-flex is-flex-direction-row center-fix">
+            <div class="is-flex is-flex-direction-row">
               <div>
-                <span class="icon">
+                <span class="icon has-text-link">
                     <FontAwesomeIcon :icon="fas.faPlus"/>
                 </span>
               </div>
@@ -36,7 +17,7 @@
         <div class="menu-label is-flex is-flex-direction-row is-justify-content-space-between center-fix" style="margin-bottom: -.25rem;">
           <div>{{ bookshelf.collections[openContents.collectionID].name }}</div>
           <div>
-          <span class="icon">
+          <span class="icon has-text-link">
               <FontAwesomeIcon :icon="fas.faCog"/>
           </span>
           </div>
@@ -47,7 +28,7 @@
             <a>Snips</a>
             <ul>
               <li v-for="s in snipList">
-                <a @click="$emit('changeSelection', {collectionID: openContents.collectionID, snipID: s.id})">
+                <a :class="{'is-active': openContents.snipID === s.id}" @click="$emit('changeSelection', {collectionID: openContents.collectionID, snipID: s.id})">
                   <span v-if="s.name !== ''">{{ s.name }}</span>
                   <span v-else class="is-color-text-light">{{ s.placeholderName }}</span>
                 </a>
@@ -61,7 +42,7 @@
           <li><a @click="$emit('newCollection')" class="p-0">
             <div class="is-flex is-flex-direction-row center-fix">
               <div>
-              <span class="icon">
+              <span class="icon has-text-link">
                   <FontAwesomeIcon :icon="fas.faPlus"/>
               </span>
               </div>
@@ -72,7 +53,7 @@
         <div class="menu-label is-flex is-flex-direction-row is-justify-content-space-between center-fix" style="margin-bottom: -.25rem;">
           <div>Collections</div>
           <div>
-          <span class="icon">
+          <span class="icon has-text-link">
               <FontAwesomeIcon :icon="fas.faCog"/>
           </span>
           </div>

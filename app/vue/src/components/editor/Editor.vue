@@ -2,7 +2,7 @@
   <div :class="['pt-3 mr-4', theme === 'dark' ? 'has-text-light' : 'has-text-dark']" style="height: 100%;">
     <div class="is-flex is-flex-direction-row is-size-3">
       <div class="is-flex-grow-1"></div>
-      <div id="toolbar" class="box is-position-sticky" style="border: none; z-index: 30;">
+      <div id="toolbar" class="box is-position-sticky" style="border: none; z-index: 30; margin-bottom: 0;">
         <select class="ql-size mx-2">
         </select>
         <select class="ql-font mx-2">
@@ -30,7 +30,6 @@ import Quill from 'quill';
 import QuillMarkdown from 'quilljs-markdown';
 import helperFunctions from "../helperFunctions.vue";
 import { shallowRef } from "vue";
-
 
 
 export default {
@@ -66,7 +65,7 @@ export default {
         }
       }, 5000 ); //TODO make this an option
     },
-    getContents(){
+    getContents() {
       return this.quill.getContents();
     }
   },
@@ -81,9 +80,9 @@ export default {
       theme: 'snow'
     } ) );
     if ( this.initialContent ) {
-      this.quill.setContents( this.initialContent , 'silent' );
-    } else{
-      this.quill.setContents( [] , 'silent' );
+      this.quill.setContents( this.initialContent, 'silent' );
+    } else {
+      this.quill.setContents( [], 'silent' );
     }
     this.quill.on( 'text-change', ( delta, oldDelta, source ) => {
       if ( !this.textTimeout ) {
@@ -118,6 +117,6 @@ export default {
 }
 
 .ql-editor.ql-blank::before {
-  color: v-bind("theme === 'dark' ? 'hsl(0, 0%, 71%)' : 'hsl(0, 0%, 29%)'") !important;
+  color: hsl(0, 0%, 48%) !important;
 }
 </style>

@@ -1,35 +1,6 @@
 <template>
   <div class="is-flex is-flex-direction-row" style="height: 100%;">
     <div style="width: 100%; height: 100%">
-      <div class="is-flex is-flex-direction-row px-4 py-0 m-2 box">
-        <div class="is-flex is-flex-direction-column is-flex-grow-1">
-          <div class="pl-2 my-3">
-            <input class="input is-size-3 titleInput" type="text" :placeholder="snip.placeholderName" v-model="snip.name"/>
-          </div>
-          <div class="pb-2">
-              <span class="icon">
-                  <FontAwesomeIcon :icon="fas.faCirclePlus"/>
-              </span>
-          </div>
-        </div>
-        <div class="buttons has-addons">
-          <button class="button is-large" title="Find">
-        <span class="icon is-large">
-          <FontAwesomeIcon :icon="fas.faMagnifyingGlass"/>
-        </span>
-          </button>
-          <button class="button is-large" title="Organize">
-        <span class="icon is-large">
-          <FontAwesomeIcon :icon="fas.faFolderPlus"/>
-        </span>
-          </button>
-          <button class="button is-large" title="Export">
-        <span class="icon is-large">
-          <FontAwesomeIcon :icon="fas.faFileExport"/>
-        </span>
-          </button>
-        </div>
-      </div>
       <div style="height: 100%;">
         <Editor
             ref="editor"
@@ -43,6 +14,7 @@
     <!--<div style="width: 20%" class="box m-2">
       <h3 class="is-size-3">Notes</h3>
     </div>-->
+    <!--Tags-->
   </div>
 </template>
 

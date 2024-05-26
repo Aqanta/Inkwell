@@ -1,4 +1,10 @@
 <template>
+  <Navbar
+      :theme="darkMode ? 'dark' : 'light'"
+      :bookshelf="bookshelf"
+      :openContents="openContents"
+      @themeChange="changeTheme"
+  />
   <div :class="['is-flex is-flex-direction-row', {'theme-dark has-background-black' : darkMode}]"
        style="height: 100%"
        v-if="showApp"
@@ -7,7 +13,7 @@
       <Sidebar
           :bookshelf="bookshelf"
           :openContents="openContents"
-          @themeChange="changeTheme"
+
           @addSnip="newSnip"
           @changeSelection="changeSelection"
       />
@@ -32,6 +38,7 @@
 import Sidebar from "./components/Sidebar.vue";
 import Editor from "./components/editor/Editor.vue";
 import Snip from "./components/editor/Snip.vue";
+import Navbar from "./components/Navbar.vue";
 </script>
 
 <script>
@@ -81,7 +88,7 @@ export default {
         delta: null,
         tags: [],
         categories: [],
-        placeholderName: `Snip ${ Object.keys( this.bookshelf.collections[collectionID].snips ).length + 1 }`
+        placeholderName: `Snip ${Object.keys( this.bookshelf.collections[collectionID].snips ).length + 1}`
       }
       return id;
     },

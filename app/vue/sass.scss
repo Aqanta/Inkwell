@@ -1,0 +1,20 @@
+// Set your brand colors
+$beige: #FFECE2;
+$orange: #DB6137;
+$blue: #4C79DF;
+$purple: #7550d4;
+$green: #40C668;
+$red: #DB2254;
+
+// Path to Bulma's sass folder
+@use "bulma/sass" with (
+  $primary: $orange,
+  $link: $blue,
+  $success: $green,
+  $info: $purple,
+  $warning: $beige,
+  $danger: $red,
+  $control-border-width: 2px,
+  $input-shadow: none
+);
+
