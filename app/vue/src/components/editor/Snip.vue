@@ -7,7 +7,7 @@
             v-if="editorVisible"
             :theme="theme"
             @text="contents => $emit('updateSnip', openContents, contents)"
-            :initialContent="delta"
+            :snip="snip"
         />
       </div>
     </div>
@@ -18,17 +18,13 @@
   </div>
 </template>
 
-<script setup>
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { fas } from '@fortawesome/free-solid-svg-icons'
-import Editor from "./Editor.vue";
-</script>
-
 <script>
-import { nextTick } from 'vue'
-
+import { nextTick, defineAsyncComponent } from 'vue';
 export default {
   name: "Snip",
+  components: {
+    Editor: defineAsyncComponent( () => import("./Editor.vue") )
+  },
   props: {
     theme: {
       type: String,
@@ -45,25 +41,23 @@ export default {
   },
   data() {
     return {
-      editorVisible: true
+      editorVisible: true,
+      fas
     }
   },
   computed: {
     snip() {
       return this.bookshelf.collections[this.openContents.collectionID].snips[this.openContents.snipID];
-    },
-    delta: function () {
-      return this.snip.delta ?? undefined;
     }
   },
   methods: {
-    getContents(){
+    getContents() {
       return this.$refs['editor'].getContents();
     }
   },
   watch: {
     openContents: {
-      async handler( ) {
+      async handler() {
         this.editorVisible = false;
         await nextTick();
         this.editorVisible = true;

@@ -13,12 +13,11 @@
       <Sidebar
           :bookshelf="bookshelf"
           :openContents="openContents"
-
           @addSnip="newSnip"
           @changeSelection="changeSelection"
       />
     </div>
-    <div style="width:82.5%">
+    <div class="is-flex-grow-1">
       <Snip
           v-if="openContents.snipID"
           ref="snip"
@@ -27,6 +26,19 @@
           :openContents="openContents"
           @updateSnip="(snipID, delta) => updateSnip(snipID, delta)"
       />
+      <Collection
+          v-else-if="openContents.collectionID"
+          :bookshelf="bookshelf"
+          :openContents="openContents"
+          @openSnip="changeSelection"
+          @addSnip="newSnip"
+          @deleteSnip="deleteSnip"
+      />
+      <CollectionsList
+          v-else
+          :bookshelf="bookshelf"
+          :openContents="openContents"
+      />
     </div>
   </div>
 </template>
@@ -34,17 +46,19 @@
 <style scoped>
 </style>
 
-<script setup>
-import Sidebar from "./components/Sidebar.vue";
-import Editor from "./components/editor/Editor.vue";
-import Snip from "./components/editor/Snip.vue";
-import Navbar from "./components/Navbar.vue";
-</script>
-
 <script>
 import { v4 as uuid } from "uuid";
+import { defineAsyncComponent } from 'vue';
 
 export default {
+  name: "app",
+  components: {
+    Navbar: defineAsyncComponent( () => import("./components/Navbar.vue") ),
+    Sidebar: defineAsyncComponent( () => import("./components/Sidebar.vue") ),
+    CollectionsList: defineAsyncComponent( () => import("./components/CollectionsList.vue") ),
+    Collection: defineAsyncComponent( () => import("./components/Collection.vue") ),
+    Snip: defineAsyncComponent( () => import("./components/editor/Snip.vue") ),
+  },
   data() {
     return {
       darkMode: false,
@@ -88,7 +102,10 @@ export default {
         delta: null,
         tags: [],
         categories: [],
-        placeholderName: `Snip ${Object.keys( this.bookshelf.collections[collectionID].snips ).length + 1}`
+        placeholderName: `Snip ${ Object.keys( this.bookshelf.collections[collectionID].snips ).length + 1 }`,
+        stats: {
+          words: 0
+        }
       }
       return id;
     },
@@ -97,9 +114,14 @@ export default {
       this.bookshelf.collections[id] = {
         name: name,
         id: id,
-        snips: {}
+        snips: {},
+        emoji: '📖'
       }
       return id;
+    },
+    deleteSnip( { collectionID, snipID } ) {
+      delete this.bookshelf.collections[collectionID].snips[snipID];
+      this.saveData();
     },
     saveData() {
       if ( this.usingElectron ) {

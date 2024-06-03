@@ -31,7 +31,6 @@ import QuillMarkdown from 'quilljs-markdown';
 import helperFunctions from "../helperFunctions.vue";
 import { shallowRef } from "vue";
 
-
 export default {
   name: "Editor",
   mixins: [helperFunctions],
@@ -40,9 +39,9 @@ export default {
       type: String,
       required: true
     },
-    initialContent: {
+    snip: {
       type: Object,
-      default: undefined
+      required: true
     }
   },
   data() {
@@ -56,6 +55,7 @@ export default {
   methods: {
     sendText() {
       let contents = this.quill.getContents();
+      this.snip.stats.words = this.quill.getText().split(" ").length;
       this.$emit( 'text', contents );
       this.newText = false;
       this.textTimeout = setTimeout( () => {
@@ -79,11 +79,19 @@ export default {
       placeholder: this.randomItem( ['Compose an epic...', 'Pick up a pen, start writing...', 'Unleash your imagination...', 'Once upon a time...', 'It was a dark and stormy night...'] ),
       theme: 'snow'
     } ) );
-    if ( this.initialContent ) {
-      this.quill.setContents( this.initialContent, 'silent' );
+
+    if ( this.snip.delta ) {
+      this.quill.setContents( this.snip.delta, 'silent' );
     } else {
       this.quill.setContents( [], 'silent' );
     }
+
+    if(!this.snip.stats){
+      this.snip.stats = {
+        words: 0
+      }
+    }
+
     this.quill.on( 'text-change', ( delta, oldDelta, source ) => {
       if ( !this.textTimeout ) {
         this.sendText();
