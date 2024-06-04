@@ -3,7 +3,7 @@ const { contextBridge, ipcRenderer } = require( "electron" );
 // Expose protected methods from node modules
 contextBridge.exposeInMainWorld( "electron", {
     send: ( channel, data ) => {
-        let validChannels = [ 'save' ];
+        let validChannels = [ 'saveCollection', 'saveSnip', "deleteCollection", "deleteSnip" ];
         if ( validChannels.includes( channel ) ) {
             ipcRenderer.send( channel, data );
         }

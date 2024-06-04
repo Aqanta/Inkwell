@@ -43,13 +43,13 @@
 
       <div class="is-flex is-flex-direction-row" style="width: 60%">
         <div class="pl-2 my-3 is-flex-grow-1" v-if="openContents.snipID">
-          <input class="input titleInput" type="text" :placeholder="snip.placeholderName" v-model="snip.name"/>
+          <input class="input titleInput" type="text" :placeholder="snip.placeholderName" v-model="snip.name" @blur="snip.updates = true"/>
         </div>
         <div class="pl-2 my-3 is-flex-grow-1" v-else-if="openContents.collectionID">
           <span class="icon is-size-3" v-if="collection.title">
             {{ cardInfo.title }}
           </span>
-          <input class="input titleInput" type="text" v-model="collection.name"/>
+          <input class="input titleInput" type="text" v-model="collection.name" @blur="collection.updates = true"/>
         </div>
       </div>
 

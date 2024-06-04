@@ -42,7 +42,6 @@ export default {
   data() {
     return {
       editorVisible: true,
-      fas
     }
   },
   computed: {

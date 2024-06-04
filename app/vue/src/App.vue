@@ -38,6 +38,8 @@
           v-else
           :bookshelf="bookshelf"
           :openContents="openContents"
+          @newCollection="newCollection"
+          @deleteCollection="deleteCollection"
       />
     </div>
   </div>
@@ -66,6 +68,7 @@ export default {
         collections: {}
       },
       usingElectron: false,
+      usingLocalStorage: storageAvailable( "localStorage" ),
       openContents: {
         collectionID: undefined,
         snipID: undefined
@@ -92,9 +95,10 @@ export default {
     },
     updateSnip( { collectionID, snipID }, delta ) {
       this.bookshelf.collections[collectionID].snips[snipID].delta = delta;
-      this.saveData();
+      this.bookshelf.collections[collectionID].snips[snipID].updates = true;
     },
     newSnip( collectionID ) {
+      console.log( 'newSnip', this.bookshelf.collections[collectionID] );
       let id = uuid();
       this.bookshelf.collections[collectionID].snips[id] = {
         name: '',
@@ -102,32 +106,78 @@ export default {
         delta: null,
         tags: [],
         categories: [],
-        placeholderName: `Snip ${ Object.keys( this.bookshelf.collections[collectionID].snips ).length + 1 }`,
+        placeholderName: `Snip ${Object.keys( this.bookshelf.collections[collectionID].snips ).length + 1}`,
         stats: {
           words: 0
-        }
+        },
+        updates: true
       }
       return id;
     },
-    newCollection( name ) {
+    newCollection( { name, emoji } ) {
       let id = uuid();
       this.bookshelf.collections[id] = {
         name: name,
         id: id,
         snips: {},
-        emoji: '📖'
+        emoji: emoji,
+        updates: true
       }
       return id;
     },
     deleteSnip( { collectionID, snipID } ) {
-      delete this.bookshelf.collections[collectionID].snips[snipID];
-      this.saveData();
-    },
-    saveData() {
       if ( this.usingElectron ) {
-        electron.send( 'save', JSON.parse( JSON.stringify( this.bookshelf ) ) );
+        electron.send( 'deleteSnip', { collectionID, snipID } );
       } else {
-        //TODO use local store
+        this.saveLocalStorage();
+      }
+      delete this.bookshelf.collections[collectionID].snips[snipID];
+    },
+    deleteCollection( { collectionID } ) {
+      if ( this.usingElectron ) {
+        electron.send( 'deleteCollection', { collectionID } );
+      } else {
+        this.saveLocalStorage();
+      }
+      delete this.bookshelf.collections[collectionID];
+    },
+    saveCollection( { collectionID } ) {
+      if ( this.usingElectron ) {
+        electron.send( 'saveCollection',
+            {
+              collectionID,
+              collection: JSON.parse( JSON.stringify( {
+                ...this.bookshelf.collections[collectionID],
+                snips: undefined,
+                updates: undefined
+              } ) )
+            } );
+        this.bookshelf.collections[collectionID].updates = false;
+      } else {
+        this.saveLocalStorage();
+      }
+    },
+    saveSnip( { collectionID, snipID } ) {
+      //TODO - make this not fire on every keypress
+      if ( this.usingElectron ) {
+        console.log( 'saveSnip', JSON.parse( JSON.stringify( this.bookshelf ) ) );
+        electron.send( 'saveSnip',
+            {
+              collectionID,
+              snipID,
+              snip: JSON.parse( JSON.stringify( {
+                ...this.bookshelf.collections[collectionID].snips[snipID],
+                updates: undefined
+              } ) )
+            } );
+        this.bookshelf.collections[collectionID].snips[snipID].updates = false;
+      } else {
+        this.saveLocalStorage();
+      }
+    },
+    saveLocalStorage() {
+      if ( this.usingLocalStorage ) {
+        localStorage.setItem( "bookshelf", JSON.stringify( this.bookshelf ) );
       }
     }
   },
@@ -141,16 +191,69 @@ export default {
     let save;
     if ( this.usingElectron ) {
       save = await electron.invoke( 'getData' );
+    } else if ( this.usingLocalStorage ) {
+      save = JSON.parse( localStorage.getItem( "bookshelf" ) );
+    } else {
+      alert( "Your browser does not support local storage. No changes are being saved" );
     }
+    console.log( "save", save );
+
     //TODO load from LS
-    if ( save ) {
+    if ( save && Object.keys( save.collections ).length > 0 ) {
       this.bookshelf = save;
     } else {
-      this.openContents.collectionID = this.newCollection( 'My Collection' );
+      this.openContents.collectionID = this.newCollection( { name: 'My Collection', emoji: '📖' } );
       this.openContents.snipID = this.newSnip( this.openContents.collectionID );
     }
 
     this.showApp = true;
+  },
+  watch: {
+    bookshelf: {
+      handler: function () {
+        Object.values( this.bookshelf.collections ).forEach( c => {
+          if ( c.updates ) {
+            this.saveCollection( { collectionID: c.id } );
+          }
+          if ( c.snips ) {
+            Object.values( c.snips ).forEach( s => {
+              if ( s.updates ) {
+                this.saveSnip( { collectionID: c.id, snipID: s.id } );
+              }
+            } )
+          }
+        } )
+      },
+      deep: true
+    }
   }
 }
+
+function storageAvailable( type ) {
+  let storage;
+  try {
+    storage = window[type];
+    const x = "__storage_test__";
+    storage.setItem( x, x );
+    storage.removeItem( x );
+    return true;
+  } catch ( e ) {
+    return (
+        e instanceof DOMException &&
+        // everything except Firefox
+        (e.code === 22 ||
+            // Firefox
+            e.code === 1014 ||
+            // test name field too, because code might not be present
+            // everything except Firefox
+            e.name === "QuotaExceededError" ||
+            // Firefox
+            e.name === "NS_ERROR_DOM_QUOTA_REACHED") &&
+        // acknowledge QuotaExceededError only if there's something already stored
+        storage &&
+        storage.length !== 0
+    );
+  }
+}
+
 </script>
